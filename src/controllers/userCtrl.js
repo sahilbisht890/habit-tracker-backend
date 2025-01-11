@@ -91,8 +91,8 @@ const loginUser = async (req, res) => {
 
     const options = {
         httpOnly: true,
- secure: false, // Disable HTTPS for local testing
-  sameSite: "lax",
+ secure: true, // Disable HTTPS for local testing
+  sameSite: 'none',
     }
 
     return res
