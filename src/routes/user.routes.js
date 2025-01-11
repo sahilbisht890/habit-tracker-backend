@@ -6,7 +6,7 @@ const verifyJWT = require('../middleware/auth.middleware')
 
 router.post('/signup' , registerUser);
 router.post('/login',loginUser);
-router.get('/logout' , verifyJWT , logoutUser);
+router.get('/logout' , logoutUser);
 router.get("/refresh-token" ,refreshAccessToken);
 
 module.exports = router ;
