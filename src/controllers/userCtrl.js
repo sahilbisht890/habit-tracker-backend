@@ -178,8 +178,8 @@ const refreshAccessToken = async (req, res) => {
           secure: true
       }
   
-      const accessToken = await existingUser.generateAccessToken();
-      const newRefreshToken = await existingUser.generateRefreshToken();
+      const accessToken = await user.generateAccessToken();
+      const newRefreshToken = await user.generateRefreshToken();
 
       user.refreshToken = newRefreshToken ;
       await user.save();
