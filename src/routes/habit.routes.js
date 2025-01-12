@@ -6,12 +6,12 @@ const verifyJWT = require('../middleware/auth.middleware')
 
 router.post('/create' ,verifyJWT, createHabit);
 router.get('/list' ,verifyJWT, getUserHabitsList);
-router.delete('/delete/:habitId',verifyJWT,deleteUserHabit);
+router.delete('/delete',verifyJWT,deleteUserHabit);
 
 router.post('/tracker/listByDate' ,verifyJWT, getHabitListByDate );
 router.post('/tracker/add' ,verifyJWT, addDailyHabit);
 router.patch('/tracker/update' ,verifyJWT, updateHabitProgress);
-router.delete('/tracker/delete/:habitTrackerId', verifyJWT, deleteHabitTracker);
+router.delete('/tracker/delete', verifyJWT, deleteHabitTracker);
 
 
 module.exports = router;
