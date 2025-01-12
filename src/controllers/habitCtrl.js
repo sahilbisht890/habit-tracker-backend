@@ -82,7 +82,6 @@ const getUserHabitsList = async (req, res) => {
 
 const deleteUserHabit = async (req, res) => {
   const { habitId } = req.query; 
-  console.log('id',habitId);
 
   try {
     const userId = req.user._id; 
@@ -109,7 +108,7 @@ const deleteUserHabit = async (req, res) => {
       });
     }
 
-    await habit.remove();
+    await habit.deleteOne();
 
     return res.status(200).json({
       success: true,
