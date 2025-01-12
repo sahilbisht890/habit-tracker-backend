@@ -122,7 +122,7 @@ const getHabitListByDate = async (req, res) => {
         $lt: nextDate,
       },
     })
-      .select("progress status dailyGoal unit").sort({updatedAt:-1});
+      .select("progress status dailyGoal unit name").sort({updatedAt:-1});
 
     if (!habits || habits.length === 0) {
       return res.status(200).json({
