@@ -121,6 +121,7 @@ const getHabitListByDate = async (req, res) => {
     }
 
     const formattedHabits = habits.map((tracker) => ({
+      id:tracker._id,
       name: tracker.habit_id.name,
       dailyGoal: tracker.habit_id.dailyGoal,
       unit: tracker.habit_id.unit,
