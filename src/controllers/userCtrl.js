@@ -208,9 +208,9 @@ const refreshAccessToken = async (req, res) => {
 
 const checkAuthentication = (req, res) => {
   if (req.user) {
-      return res.status(200).json({ message: 'User authenticated successfully', user: req.user });
+      return res.status(200).json({success : true , message: 'User authenticated successfully', user: req.user });
   } else {
-      return res.status(401).json({ message: 'User is not authenticated' });
+      return res.status(401).json({success : false , message: 'User is not authenticated' });
   }
 };
 
