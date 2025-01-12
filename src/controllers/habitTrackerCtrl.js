@@ -1,4 +1,5 @@
 const HabitTracker = require("../models/habitTracker.modal");
+const Habit = require('../models/habit.modal')
 
 const addDailyHabit = async (req, res) => {
   const { habitId, date } = req.body;
@@ -7,7 +8,7 @@ const addDailyHabit = async (req, res) => {
     const userId = req.user._id; 
 
     if (!habitId || !date) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "habitId and date are required",
       });
@@ -17,6 +18,14 @@ const addDailyHabit = async (req, res) => {
     const parsedDate = new Date(`${year}-${month}-${day}`);
     const nextDate = new Date(parsedDate);
     nextDate.setDate(parsedDate.getDate() + 1);
+
+    const habit = await Habit.findOne({ _id: habitId, user: userId });
+    if (!habit) {
+      return res.status(401).json({
+        success: false,
+        message: "Habit not found.",
+      });
+    }
 
     const existingRecord = await HabitTracker.findOne({
       user_id: userId,
@@ -36,12 +45,15 @@ const addDailyHabit = async (req, res) => {
 
     const habitTracker = new HabitTracker({
       user_id: userId,
+      name:habit.name,
       habit_id: habitId,
+      dailyGoal: habit.dailyGoal, 
+      unit: habit.unit,            
     });
 
     await habitTracker.save();
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: "Habit added for the provided date",
     });
@@ -53,6 +65,7 @@ const addDailyHabit = async (req, res) => {
     });
   }
 };
+
 
 const updateHabitProgress = async (req, res) => {
   const { id, progress, status } = req.body;
@@ -88,7 +101,7 @@ const getHabitListByDate = async (req, res) => {
   const { date } = req.body;
 
   try {
-    const userId = req.user._id; // Retrieved from verifyJWT middleware
+    const userId = req.user._id; 
 
     if (!date) {
       return res.status(400).json({
@@ -109,8 +122,7 @@ const getHabitListByDate = async (req, res) => {
         $lt: nextDate,
       },
     })
-      .populate("habit_id", "name dailyGoal unit")
-      .select("progress status");
+      .select("progress status dailyGoal unit").sort({updatedAt:-1});
 
     if (!habits || habits.length === 0) {
       return res.status(200).json({
@@ -122,9 +134,9 @@ const getHabitListByDate = async (req, res) => {
 
     const formattedHabits = habits.map((tracker) => ({
       id:tracker._id,
-      name: tracker.habit_id.name,
-      dailyGoal: tracker.habit_id.dailyGoal,
-      unit: tracker.habit_id.unit,
+      name: tracker.name,
+      dailyGoal: tracker.dailyGoal,
+      unit: tracker.unit,
       progress: tracker.progress,
       status: tracker.status,
     }));
@@ -143,4 +155,40 @@ const getHabitListByDate = async (req, res) => {
   }
 };
 
-module.exports = { addDailyHabit, getHabitListByDate, updateHabitProgress };
+const deleteHabitTracker = async (req, res) => {
+  const { habitTrackerId } = req.params;
+
+  try {
+    const userId = req.user._id; 
+
+    const habitTracker = await HabitTracker.findOne({ 
+      _id: habitTrackerId,
+      user_id: userId 
+    });
+
+    if (!habitTracker) {
+      return res.status(401).json({
+        success: false,
+        message: "Habit tracker record not found or does not belong to this user.",
+      });
+    }
+
+    await habitTracker.remove();
+
+    return res.status(200).json({
+      success: true,
+      message: "Habit tracker record successfully deleted.",
+    });
+  } catch (error) {
+    console.error("Error deleting habit tracker:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting the habit tracker record.",
+      error: error.message,
+    });
+  }
+};
+
+
+
+module.exports = { addDailyHabit, getHabitListByDate, updateHabitProgress , deleteHabitTracker};

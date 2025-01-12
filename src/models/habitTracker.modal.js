@@ -8,6 +8,11 @@ const habitTrackerSchema = new Schema(
       ref: "User",
       required: true,
     },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     habit_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Habit",
@@ -22,6 +27,16 @@ const habitTrackerSchema = new Schema(
       enum: ["complete", "incomplete"],
       required: true,
       default: "incomplete",
+    },
+    dailyGoal: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+    unit: {
+      type: String,
+      required: true,
+      trim: true,
     },
   },
   {

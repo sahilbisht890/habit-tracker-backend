@@ -49,10 +49,8 @@ const createHabit = async (req, res) => {
 
 const getUserHabitsList = async (req, res) => {
   try {
-
     const userId = req.user._id;
-
-    const habits = await Habit.find({ user: userId }).select("name");
+    const habits = await Habit.find({ user: userId }).select("name").sort({updatedAt:-1});
 
     if (!habits || habits.length === 0) {
       return res.status(200).json({
@@ -82,4 +80,50 @@ const getUserHabitsList = async (req, res) => {
   }
 };
 
-module.exports = { createHabit, getUserHabitsList };
+const deleteUserHabit = async (req, res) => {
+  const { habitId } = req.params; 
+
+  try {
+    const userId = req.user._id; 
+
+    const habit = await Habit.findOne({ _id: habitId, user: userId });
+
+    if (!habit) {
+      return res.status(401).json({
+        success: false,
+        message: "Habit not found or does not belong to this user.",
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { habits: habitId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    await habit.remove();
+
+    return res.status(200).json({
+      success: true,
+      message: "Habit successfully deleted.",
+    });
+  } catch (error) {
+    console.error("Error deleting habit:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting the habit.",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { createHabit, getUserHabitsList, deleteUserHabit };
+
+

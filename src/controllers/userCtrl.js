@@ -91,8 +91,8 @@ const loginUser = async (req, res) => {
 
     const options = {
         httpOnly: true,
- secure: true, // Disable HTTPS for local testing
-  sameSite: 'none',
+        secure: true, 
+        sameSite: 'none',
     }
 
     return res
@@ -132,9 +132,8 @@ const logoutUser = async(req, res) => {
 
   const options = {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite:'none'
-
   }
 
   return res
@@ -207,4 +206,13 @@ const refreshAccessToken = async (req, res) => {
 
 }
 
-module.exports = { registerUser  , loginUser , logoutUser , refreshAccessToken };
+const checkAuthentication = (req, res) => {
+  if (req.user) {
+      return res.status(200).json({ message: 'User authenticated successfully', user: req.user });
+  } else {
+      return res.status(401).json({ message: 'User is not authenticated' });
+  }
+};
+
+
+module.exports = { registerUser  , loginUser , logoutUser , refreshAccessToken , checkAuthentication };

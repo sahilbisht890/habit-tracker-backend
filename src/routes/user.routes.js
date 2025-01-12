@@ -8,5 +8,6 @@ router.post('/signup' , registerUser);
 router.post('/login',loginUser);
 router.get('/logout' ,verifyJWT, logoutUser);
 router.get("/refresh-token" ,refreshAccessToken);
+router.get("/check-auth", verifyJWT, checkAuthentication);
 
 module.exports = router ;
