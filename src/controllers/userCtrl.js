@@ -185,6 +185,9 @@ const refreshAccessToken = async (req, res) => {
 
       user.refreshToken = newRefreshToken ;
       await user.save();
+
+        const userData = await User.findById(decodedToken?._id).select(
+      "-password -refreshToken");
   
   
       return res
@@ -194,7 +197,8 @@ const refreshAccessToken = async (req, res) => {
       .json(
           {
             success : true ,
-            message : "Access token refreshed"
+            message : "Access token refreshed",
+            user : userData
           }
       )
   } catch (error) {
