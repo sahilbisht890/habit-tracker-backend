@@ -156,7 +156,7 @@ const getHabitListByDate = async (req, res) => {
 };
 
 const deleteHabitTracker = async (req, res) => {
-  const { habitTrackerId } = req.params;
+  const { habitTrackerId } = req.query;
 
   try {
     const userId = req.user._id; 
