@@ -80,6 +80,42 @@ const getUserHabitsList = async (req, res) => {
   }
 };
 
+const updateHabit = async (req, res) => {
+  const { id, name, dailyGoal, unit } = req.body;
+
+  try {
+    const userId = req.user._id;
+
+    const habit = await Habit.findOne({ _id: id, user: userId });
+    if (!habit) {
+      return res.status(404).json({
+        success: false,
+        message: "Habit not found or does not belong to the user.",
+      });
+    }
+
+    habit.name = name || habit.name;
+    habit.dailyGoal = dailyGoal || habit.dailyGoal;
+    habit.unit = unit || habit.unit;
+
+    const updatedHabit = await habit.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Habit updated successfully.",
+      habit: updatedHabit,
+    });
+  } catch (error) {
+    console.error("Error updating habit:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the habit.",
+      error: error.message,
+    });
+  }
+};
+
+
 const deleteUserHabit = async (req, res) => {
   const { habitId } = req.query; 
 
@@ -124,6 +160,6 @@ const deleteUserHabit = async (req, res) => {
   }
 };
 
-module.exports = { createHabit, getUserHabitsList, deleteUserHabit };
+module.exports = { createHabit, getUserHabitsList, deleteUserHabit , updateHabit};
 
 
