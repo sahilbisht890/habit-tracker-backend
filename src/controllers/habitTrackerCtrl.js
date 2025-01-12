@@ -173,7 +173,7 @@ const deleteHabitTracker = async (req, res) => {
       });
     }
 
-    await habitTracker.remove();
+    await habitTracker.deleteOne();
 
     return res.status(200).json({
       success: true,
