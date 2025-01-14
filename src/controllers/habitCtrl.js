@@ -50,7 +50,7 @@ const createHabit = async (req, res) => {
 const getUserHabitsList = async (req, res) => {
   try {
     const userId = req.user._id;
-    const habits = await Habit.find({ user: userId }).select("name").sort({updatedAt:-1});
+    const habits = await Habit.find({ user: userId }).select("name dailyGoal unit").sort({updatedAt:-1});
 
     if (!habits || habits.length === 0) {
       return res.status(200).json({
@@ -63,6 +63,8 @@ const getUserHabitsList = async (req, res) => {
     const formattedHabits = habits.map((habit) => ({
       id: habit._id,
       name: habit.name,
+      dailyGoal:habit.dailyGoal,
+      unit : habit.unit
     }));
 
     return res.status(200).json({
