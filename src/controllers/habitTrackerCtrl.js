@@ -14,10 +14,7 @@ const addDailyHabit = async (req, res) => {
       });
     }
 
-    const [day, month, year] = date.split("-");
-    const parsedDate = new Date(`${year}-${month}-${day}`);
-    const nextDate = new Date(parsedDate);
-    nextDate.setDate(parsedDate.getDate() + 1);
+
 
     const habit = await Habit.findOne({ _id: habitId, user: userId });
     if (!habit) {
@@ -30,10 +27,7 @@ const addDailyHabit = async (req, res) => {
     const existingRecord = await HabitTracker.findOne({
       user_id: userId,
       habit_id: habitId,
-      createdAt: {
-        $gte: parsedDate,
-        $lt: nextDate,
-      },
+      date : date
     });
 
     if (existingRecord) {
@@ -48,7 +42,8 @@ const addDailyHabit = async (req, res) => {
       name:habit.name,
       habit_id: habitId,
       dailyGoal: habit.dailyGoal, 
-      unit: habit.unit,            
+      unit: habit.unit,     
+      date : date       
     });
 
     await habitTracker.save();
@@ -110,17 +105,11 @@ const getHabitListByDate = async (req, res) => {
       });
     }
 
-    const [day, month, year] = date.split("-");
-    const parsedDate = new Date(`${year}-${month}-${day}`);
-    const nextDate = new Date(parsedDate);
-    nextDate.setDate(parsedDate.getDate() + 1);
+
 
     const habits = await HabitTracker.find({
       user_id: userId,
-      createdAt: {
-        $gte: parsedDate,
-        $lt: nextDate,
-      },
+      date : date
     })
       .select("progress status dailyGoal unit name").sort({updatedAt:-1});
 
